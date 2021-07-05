@@ -1,5 +1,3 @@
-
-
 def print_hi(name):
     print(f'Hi, {name}')  # Press Strg+F8 to toggle the breakpoint.
 
