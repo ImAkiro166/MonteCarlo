@@ -1,12 +1,11 @@
 import random
 import itertools
+import time
 
 
 def hand_to_numeric(hand):
-    #
     # Converts alphanumeric hand to numeric values for easier comparisons
     # Also sorts cards based on rank
-    #
     card_rank = {"2": 0, "3": 1, "4": 2, "5": 3, "6": 4, "7": 5, "8": 6, "9": 7, "T": 8, "J": 9, "Q": 10, "K": 11,
                  "A": 12}
 
@@ -19,9 +18,7 @@ def hand_to_numeric(hand):
 
 
 def readable_hand(hand):
-    #
     # Returns a readable version of a set of cards
-    #
     card_rank = {0: "2", 1: "3", 2: "4", 3: "5", 4: "6", 5: "7", 6: "8", 7: "9", 8: "T", 9: "J", 10: "Q", 11: "K",
                  12: "A"}
     card_suit = {0: "c", 1: "d", 2: "h", 3: "s"}
@@ -32,9 +29,7 @@ def readable_hand(hand):
 
 
 def check_flush(hand):
-    #
     # Returns True if hand is a Flush, otherwise returns False
-    #
     hand_suit = [hand[0][1], hand[1][1], hand[2][1], hand[3][1], hand[4][1]]
     for i in range(4):
         if hand_suit.count(i) == 5:
@@ -43,10 +38,8 @@ def check_flush(hand):
 
 
 def check_quads(hand):
-    #
     # Return True if hand is Four-of-a-Kind, otherwise returns False
     # Also returns rank of four of a kind card and rank of fifth card (in case 2 ppl have quads)
-    #
     rank = [hand[0][0], hand[1][0], hand[2][0], hand[3][0], hand[4][0]]
     for i in range(13):
         if rank.count(i) == 4:
@@ -59,10 +52,8 @@ def check_quads(hand):
 
 
 def check_straight(hand):
-    #
     # Return True if hand is a Straight, otherwise returns False
     # Also returns rank of the straight
-    #
     if hand[0][0] == hand[1][0] + 1 == hand[2][0] + 2 == hand[3][0] + 3 == hand[4][0] + 4:
         return True, hand[0][0]
     elif (hand[0][0] == 12) & (hand[1][0] == 3) & (hand[2][0] == 2) & (hand[3][0] == 1) & (hand[4][0] == 0):
@@ -72,10 +63,8 @@ def check_straight(hand):
 
 
 def check_straight_flush(hand):
-    #
     # Return True if hand is a Straight Flush, otherwise returns False
     # Also returns rank of the Straight
-    #
     if check_flush(hand) & check_straight(hand)[0]:
         return True, check_straight(hand)[1]
     else:
@@ -83,10 +72,8 @@ def check_straight_flush(hand):
 
 
 def check_full_house(hand):
-    #
     # Return True if hand is a Full House, otherwise returns False
     # Also returns rank of the trips and the pair
-    #
     rank = [hand[0][0], hand[1][0], hand[2][0], hand[3][0], hand[4][0]]
     for i in range(13):
         if rank.count(i) == 3:
@@ -99,10 +86,8 @@ def check_full_house(hand):
 
 
 def check_trips(hand):
-    #
     # Return True if hand is a triple, otherwise returns False
     # Also returns rank of the trips and the two kickers
-    #
     rank = [hand[0][0], hand[1][0], hand[2][0], hand[3][0], hand[4][0]]
     for i in range(13):
         if rank.count(i) == 3:
@@ -118,10 +103,8 @@ def check_trips(hand):
 
 
 def check_two_pair(hand):
-    #
     # Return True if hand is a Two Pair, otherwise returns False
     # Also returns rank of the Pairs and the kicker
-    #
     rank = [hand[0][0], hand[1][0], hand[2][0], hand[3][0], hand[4][0]]
     for i in range(13):
         if rank.count(i) == 2:
@@ -137,10 +120,8 @@ def check_two_pair(hand):
 
 
 def check_pair(hand):
-    #
     # Return True if hand is a Pair, otherwise returns False
     # Also returns ranks of paired cards and kickers
-    #
     rank = [hand[0][0], hand[1][0], hand[2][0], hand[3][0], hand[4][0]]
     for i in range(13):
         if rank.count(i) == 2:
@@ -159,9 +140,7 @@ def check_pair(hand):
 
 
 def what_hand(hand):
-    #
     # Returns the rank of the hand and its kickers
-    #
     if check_straight_flush(hand)[0]:
         return 8, check_straight_flush(hand)[1]
     elif check_quads(hand)[0]:
@@ -183,6 +162,7 @@ def what_hand(hand):
 
 
 def what_final_hand(player_hand, community_hand):
+    # Goes through all the 60 possible hands and returns the best possible combination of them
     player_cards = ([player_hand[i:i + 2] for i in range(0, len(player_hand), 2)])
     community_cards = ([community_hand[i:i + 2] for i in range(0, len(community_hand), 2)])
     all_player_cards = list(itertools.combinations(player_cards, 2))
@@ -197,50 +177,88 @@ def what_final_hand(player_hand, community_hand):
 
 
 def categorize_hand(result):
-    global high_card, pairs, two_pairs, trips, straights, flushes, Full_Houses, Quads, straight_flushes, royal_flushes, total
+    # Puts the hand in its category
+    global rank_list
     rank = result[0]
-    total += 1
     if rank == 0:
-        high_card += 1
+        rank_list[0] += 1
     elif rank == 1:
-        pairs += 1
+        rank_list[1] += 1
     elif rank == 2:
-        two_pairs += 1
+        rank_list[2] += 1
     elif rank == 3:
-        trips += 1
+        rank_list[3] += 1
     elif rank == 4:
-        straights += 1
+        rank_list[4] += 1
     elif rank == 5:
-        flushes += 1
+        rank_list[5] += 1
     elif rank == 6:
-        Full_Houses += 1
+        rank_list[6] += 1
     elif rank == 7:
-        Quads += 1
+        rank_list[7] += 1
     elif result[1] == 12:
-        royal_flushes += 1
+        rank_list[9] += 1
     else:
-        straight_flushes += 1
+        rank_list[8] += 1
+
+
+def generate_hand():
+    # Generates a set of community cards and a player hand and returns them
+    player_hand = []
+    community_hand = []
+    i = 0
+    j = 0
+    while i < 4:
+        player_card = []
+        rank = random.randint(0, 12)
+        suit = random.randint(0, 3)
+        player_card.append(rank)
+        player_card.append(suit)
+        if player_card in player_hand:
+            pass
+        else:
+            i += 1
+            player_hand.append(player_card)
+    while j < 5:
+        community_card = []
+        rank = random.randint(0, 12)
+        suit = random.randint(0, 3)
+        community_card.append(rank)
+        community_card.append(suit)
+        if community_card in player_hand or community_card in community_hand:
+            pass
+        else:
+            j += 1
+            community_hand.append(community_card)
+    return player_hand, community_hand
 
 
 def main():
-    high_card = 0
-    pairs = 0
-    two_pairs = 0
-    trips = 0
-    straights = 0
-    flushes = 0
-    Full_Houses = 0
-    Quads = 0
-    straight_flushes = 0
-    royal_flushes = 0
+    global rank_list
+    rank_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     total = 0
-    player_hand = "QhJh6d5d"
-    community_hand = "AhKhTh5h6c"
-    test_hand = "Ah2h3h4h5h"
-    result = what_final_hand(player_hand, community_hand)
-    print(result)
-    categorize_hand(result)
-    print()
+    iterations = 1000000
+    start = time.time()
+    for i in range(iterations):
+        random_hand = generate_hand()
+        player_hand = readable_hand(random_hand[0])
+        community_hand = readable_hand(random_hand[1])
+        result = what_final_hand(player_hand, community_hand)
+        categorize_hand(result)
+        total += 1
+    end = time.time()
+    print("High Cards: " + str(rank_list[0]))
+    print("One Pairs: " + str(rank_list[1]))
+    print("Two Pairs: " + str(rank_list[2]))
+    print("Three of a kind: " + str(rank_list[3]))
+    print("Straights: " + str(rank_list[4]))
+    print("Flushes: " + str(rank_list[5]))
+    print("Full Houses: " + str(rank_list[6]))
+    print("Four of a kind: " + str(rank_list[7]))
+    print("Straight Flushes: " + str(rank_list[8]))
+    print("Royal Flushes: " + str(rank_list[9]))
+    print("Total: " + str(total))
+    print("Elapsed time: " + str(end - start) + "s")
 
 
 if __name__ == '__main__':
